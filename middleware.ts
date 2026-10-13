@@ -49,7 +49,12 @@ export async function middleware(request: NextRequest) {
   const isAuthenticated = !!user || !!demoRole;
 
   // 1. If user is logged in and visits /login or /signup, redirect to their role home
-  if (isAuthenticated && (pathname === "/login" || pathname === "/signup")) {
+  // UNLESS they arrived with logged_out=1 or switch=1 to change accounts
+  const isSwitchingOrLoggedOut =
+    request.nextUrl.searchParams.has("logged_out") ||
+    request.nextUrl.searchParams.has("switch");
+
+  if (isAuthenticated && !isSwitchingOrLoggedOut && (pathname === "/login" || pathname === "/signup")) {
     const target = role === "admin" ? "/admin" : role === "doctor" ? "/doctor" : "/patient";
     return NextResponse.redirect(new URL(target, request.url));
   }
@@ -69,7 +74,8 @@ export async function middleware(request: NextRequest) {
     }
 
     // Role-based authorization
-    if (isPatientRoute && role !== "patient") {
+    // NOTE: Doctor and Admin can also access patient portal as per system specifications
+    if (isPatientRoute && role !== "patient" && role !== "doctor" && role !== "admin") {
       const forbiddenUrl = new URL("/forbidden", request.url);
       forbiddenUrl.searchParams.set("from", pathname);
       forbiddenUrl.searchParams.set("role", role);
@@ -77,7 +83,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(forbiddenUrl);
     }
 
-    if (isDoctorRoute && role !== "doctor") {
+    if (isDoctorRoute && role !== "doctor" && role !== "admin") {
       const forbiddenUrl = new URL("/forbidden", request.url);
       forbiddenUrl.searchParams.set("from", pathname);
       forbiddenUrl.searchParams.set("role", role);

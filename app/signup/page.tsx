@@ -123,8 +123,7 @@ function SignupForm() {
         message: `Welcome, ${fullName}! Redirecting to your ${role === "doctor" ? "Doctor OPD Panel" : "Patient Dashboard"}.`,
       });
 
-      router.push(role === "doctor" ? "/doctor" : "/patient");
-      router.refresh();
+      window.location.href = role === "doctor" ? "/doctor" : "/patient";
     } catch {
       setErrorMsg("Network error during registration. Please try again.");
     } finally {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { SYNTHETIC_CONSULTATIONS } from "@/lib/synthetic-data";
 import type { Database } from "@/types/database";
+import { getSupabaseUrl, getSupabaseServiceRoleKey } from "@/lib/supabase/config";
 
 export const dynamic = "force-dynamic";
 
@@ -45,9 +46,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
 
     // 2. Handle live Supabase cases
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://avuslmtusrndxcmuigvx.supabase.co";
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-    const supabase = createClient<Database>(supabaseUrl, serviceRoleKey);
+    const supabase = createClient<Database>(getSupabaseUrl(), getSupabaseServiceRoleKey());
 
     // Update consultation status to approved
     const { error: cErr } = await supabase

@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database";
+import { getSupabaseUrl, getSupabaseServiceRoleKey } from "@/lib/supabase/config";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://avuslmtusrndxcmuigvx.supabase.co";
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-    const supabase = createClient<Database>(supabaseUrl, serviceRoleKey);
+    const supabase = createClient<Database>(getSupabaseUrl(), getSupabaseServiceRoleKey());
 
     const body = await req.json().catch(() => ({}));
     const patientId = body.patient_id || "p-101";

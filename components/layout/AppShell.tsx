@@ -156,13 +156,37 @@ export function AppShell({ children }: AppShellProps) {
   const handleLogout = async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
-      document.cookie = "im_demo_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      document.cookie = "im_user_name=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      document.cookie = "im_user_email=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    } finally {
-      router.push("/login");
-      router.refresh();
+    } catch {
+      // ignore
     }
+
+    // Force clear client cookies
+    const cookieNames = [
+      "im_demo_role",
+      "im_user_name",
+      "im_user_email",
+      "im_auth_state",
+      "sb-access-token",
+      "sb-refresh-token",
+      "supabase-auth-token",
+    ];
+    cookieNames.forEach((name) => {
+      document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
+    });
+    try {
+      document.cookie.split(";").forEach((cookie) => {
+        const eqPos = cookie.indexOf("=");
+        const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+        if (name.startsWith("sb-") || name.startsWith("im_") || name.startsWith("supabase")) {
+          document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
+        }
+      });
+    } catch {
+      // ignore
+    }
+
+    // Hard navigate to login to flush all memory and router caches
+    window.location.href = "/login?logged_out=1";
   };
 
   const switchWorkspace = (targetRole: "patient" | "doctor" | "admin") => {
@@ -176,7 +200,7 @@ export function AppShell({ children }: AppShellProps) {
     document.cookie = `im_user_name=${encodeURIComponent(meta.name)}; path=/; max-age=604800; SameSite=Lax`;
     document.cookie = `im_user_email=${encodeURIComponent(meta.email)}; path=/; max-age=604800; SameSite=Lax`;
     setProfileMenuOpen(false);
-    router.push(meta.path);
+    window.location.href = meta.path;
   };
 
   // Active role takes strict precedence from route, fallback to user.role

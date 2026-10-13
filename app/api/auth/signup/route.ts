@@ -95,39 +95,25 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Also store active session cookies for smooth prototype usage
-    cookieStore.set("im_demo_role", role, { path: "/", maxAge: 604800, sameSite: "lax" });
-    cookieStore.set("im_user_name", fullName, { path: "/", maxAge: 604800, sameSite: "lax" });
-    cookieStore.set("im_user_email", email, { path: "/", maxAge: 604800, sameSite: "lax" });
-
-    if (authError || !authData.user) {
-      // If Supabase rates limit or demo signup, we still allow successful mock entry for seamless prototype testing
-      return NextResponse.json({
-        success: true,
-        user: {
-          id: `demo-${role}-${Date.now()}`,
-          email,
-          role,
-          fullName,
-        },
-        redirectPath: role === "patient" ? "/patient" : "/doctor",
-        message: "Profile created successfully.",
-      });
-    }
-
     const redirectPath = role === "patient" ? "/patient" : "/doctor";
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       user: {
-        id: authData.user.id,
-        email: authData.user.email,
+        id: authData?.user?.id || `demo-${role}-${Date.now()}`,
+        email,
         role,
         fullName,
       },
       redirectPath,
       message: "Account created successfully.",
     });
+
+    response.cookies.set("im_demo_role", role, { path: "/", maxAge: 604800, sameSite: "lax" });
+    response.cookies.set("im_user_name", fullName, { path: "/", maxAge: 604800, sameSite: "lax" });
+    response.cookies.set("im_user_email", email, { path: "/", maxAge: 604800, sameSite: "lax" });
+
+    return response;
   } catch (err) {
     console.error("Signup error:", err);
     return NextResponse.json({ error: "Internal server error." }, { status: 500 });

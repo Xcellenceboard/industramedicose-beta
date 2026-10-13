@@ -20,7 +20,7 @@ supabase/
 
 ### Method 1: Web SQL Editor (Fastest)
 
-1. **Log in to Supabase**: Navigate to your Supabase Project Dashboard (`https://supabase.com/dashboard/project/avuslmtusrndxcmuigvx`).
+1. **Log in to Supabase**: Navigate to your Supabase Project Dashboard (`https://supabase.com/dashboard/project/<your-project-ref>`).
 2. **Open SQL Editor**: In the left sidebar, click on **SQL Editor**.
 3. **Execute Migration**:
    - Create a **New query**.
@@ -41,7 +41,7 @@ If you have the Supabase CLI installed locally:
 
 ```bash
 # Link your remote Supabase project
-npx supabase link --project-ref avuslmtusrndxcmuigvx
+npx supabase link --project-ref <your-project-ref>
 
 # Push migrations to the linked project
 npx supabase db push

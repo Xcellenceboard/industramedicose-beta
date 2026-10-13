@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AuthLayout } from "@/components/layout/AuthLayout";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -70,7 +70,9 @@ const ROLE_CONFIGS: Record<PortalRole, RoleMetadata> = {
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { addToast } = useToast();
+  const wasLoggedOut = searchParams.get("logged_out") === "1";
 
   const [selectedRole, setSelectedRole] = useState<PortalRole>("doctor");
   const [authMode, setAuthMode] = useState<"password" | "magic-link">("password");
@@ -112,8 +114,8 @@ export default function LoginPage() {
         message: `Signed in as ${data.user.fullName} (${data.user.role}). Redirecting to ${data.redirectPath}...`,
       });
 
-      router.push(data.redirectPath || activeConfig.destinationPath);
-      router.refresh();
+      // Full navigation to ensure server re-evaluates all cookies cleanly
+      window.location.href = data.redirectPath || activeConfig.destinationPath;
     } catch {
       setErrorMsg("A network error occurred. Please try again.");
     } finally {
@@ -177,8 +179,7 @@ export default function LoginPage() {
         message: `Opening ${data.redirectPath} for ${data.user.fullName}.`,
       });
 
-      router.push(data.redirectPath);
-      router.refresh();
+      window.location.href = data.redirectPath;
     } catch {
       setErrorMsg("Failed to initiate demo session.");
     } finally {
@@ -192,6 +193,19 @@ export default function LoginPage() {
       subtitle="Select which dashboard you wish to access, or launch directly using 1-click test personas."
     >
       <div className="space-y-6">
+        {/* Logged Out Success Banner */}
+        {wasLoggedOut && !errorMsg && (
+          <div
+            role="status"
+            className="p-4 rounded-xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50/90 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-200 text-xs sm:text-sm flex items-start gap-2.5 animate-in fade-in"
+          >
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+            <div className="flex-1 font-medium">
+              You have been safely signed out. Select your role or launch a session below.
+            </div>
+          </div>
+        )}
+
         {/* Error Alert Banner */}
         {errorMsg && (
           <div
@@ -352,7 +366,13 @@ export default function LoginPage() {
                   type="button"
                   onClick={() => {
                     setEmail(activeConfig.demoEmail);
-                    setPassword("DemoDoctor2026!");
+                    setPassword(
+                      selectedRole === "doctor"
+                        ? "DemoDoctor2026!"
+                        : selectedRole === "admin"
+                        ? "DemoAdmin2026!"
+                        : "DemoPatient2026!"
+                    );
                   }}
                   className="text-[11px] text-teal-600 dark:text-teal-400 font-medium hover:underline"
                 >

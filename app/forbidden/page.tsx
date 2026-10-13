@@ -19,8 +19,16 @@ export default function ForbiddenPage() {
     currentRole === "doctor" ? "/doctor" : currentRole === "admin" ? "/admin" : "/patient";
 
   const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    window.location.href = "/login";
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // ignore
+    }
+    const cookieNames = ["im_demo_role", "im_user_name", "im_user_email", "im_auth_state"];
+    cookieNames.forEach((name) => {
+      document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
+    });
+    window.location.href = "/login?logged_out=1";
   };
 
   return (

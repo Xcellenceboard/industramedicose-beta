@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { SYNTHETIC_CONSULTATIONS, SyntheticRecord } from "@/lib/synthetic-data";
+import { getSupabaseUrl, getSupabaseServiceRoleKey } from "@/lib/supabase/config";
 
 export const dynamic = "force-dynamic";
 
@@ -9,8 +10,8 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
   try {
     // 1. Try to fetch from live Supabase
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://avuslmtusrndxcmuigvx.supabase.co";
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+    const supabaseUrl = getSupabaseUrl();
+    const serviceRoleKey = getSupabaseServiceRoleKey();
     
     let dbConsultation: Record<string, unknown> | null = null;
     let dbPatient: Record<string, unknown> | null = null;
