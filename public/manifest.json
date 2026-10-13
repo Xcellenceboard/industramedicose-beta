@@ -1,0 +1,21 @@
+{
+  "name": "Industra Medicose - The Two-Minute Doctor",
+  "short_name": "Medicose",
+  "description": "Agentic-AI Clinical Co-Pilot for Rapid OPD Consultations",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f2b48",
+  "theme_color": "#0d9488",
+  "icons": [
+    {
+      "src": "/images/medi-avatar.webp",
+      "sizes": "192x192",
+      "type": "image/webp"
+    },
+    {
+      "src": "/images/medi-avatar.webp",
+      "sizes": "512x512",
+      "type": "image/webp"
+    }
+  ]
+}

@@ -2,26 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #F8FAFC;
+    --foreground: #0B2545;
+    --card: #FFFFFF;
+    --card-foreground: #0B2545;
+    --border: #E2E8F0;
+    --muted: #F1F5F9;
+    --muted-foreground: #64748B;
   }
-}
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  .dark {
+    --background: #061221;
+    --foreground: #F1F5F9;
+    --card: #0B2545;
+    --card-foreground: #F8FAFC;
+    --border: #1E3A5F;
+    --muted: #0E2F56;
+    --muted-foreground: #94A3B8;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-teal-100 selection:text-teal-900 dark:selection:bg-teal-900 dark:selection:text-teal-100;
+    min-height: 100vh;
+  }
+
+  /* Accessible focus indicators */
+  :focus-visible {
+    outline: 2px solid #13A89E;
+    outline-offset: 2px;
+  }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .glassmorphism {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
   }
+
+  .dark .glassmorphism {
+    background: rgba(11, 37, 69, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(30, 58, 95, 0.8);
+  }
+
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(19, 168, 158, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(19, 168, 158, 0.5);
 }
