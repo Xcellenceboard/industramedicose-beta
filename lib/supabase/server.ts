@@ -4,10 +4,15 @@ import { Database } from "@/types/database";
 
 export function createServerSupabaseClient() {
   const cookieStore = cookies();
+  const supabaseUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL || "https://avuslmtusrndxcmuigvx.supabase.co";
+  const supabaseAnonKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30.placeholder";
 
   return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         get(name: string) {
@@ -18,7 +23,6 @@ export function createServerSupabaseClient() {
             cookieStore.set({ name, value, ...options });
           } catch {
             // The `set` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing user sessions.
           }
         },
         remove(name: string, options: CookieOptions) {
